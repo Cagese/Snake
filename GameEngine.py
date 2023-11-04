@@ -82,7 +82,8 @@ class Snake:
         try:
             if self.body[0].direction == 'x+' and self.board.matrix[self.x - 1][self.y] not in [head,
                                                                                                 part_of_body] and 0 <= self.x - 1 <= self.board.height:
-                if self.board.matrix[self.x - 1][self.y] == 'A':
+
+                if self.board.matrix[self.x - 1][self.y] != 'A':
                     self.body.insert(1, part_of_body(x=self.x, y=self.y))
                     self.board.matrix[self.x - 1][self.y] = self.body[0]
                     self.board.matrix[self.x][self.y] = self.body[1]
