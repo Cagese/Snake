@@ -6,21 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>554</width>
-    <height>379</height>
+    <width>1133</width>
+    <height>823</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>60</x>
       <y>50</y>
-      <width>421</width>
-      <height>221</height>
+      <width>861</width>
+      <height>571</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -62,6 +62,9 @@
          <property name="text">
           <string>Количество игроков:1</string>
          </property>
+         <property name="alignment">
+          <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+         </property>
         </widget>
        </item>
        <item>
@@ -93,7 +96,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>554</width>
+     <width>1133</width>
      <height>21</height>
     </rect>
    </property>
