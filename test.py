@@ -13,9 +13,7 @@ class Example(QWidget):
         self.setGeometry(300, 300, 200, 200)
         self.setWindowTitle('Рисование')
 
-    # Метод срабатывает, когда виджету надо
-    # перерисовать свое содержимое,
-    # например, при создании формы
+
     def paintEvent(self, event):
         # Создаем объект QPainter для рисования
         qp = QPainter()
