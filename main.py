@@ -7,7 +7,7 @@ from gameUi import Ui_MainWindow as gameui
 
 #self.timer.timeout.connect(self.run)
 #self.timer.start()
-
+print('hello world')
 class MainMenu(QMainWindow, mainui):
 
 
