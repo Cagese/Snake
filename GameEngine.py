@@ -20,10 +20,10 @@ class board:
             print('')
         return ''
 
-    def add_snake(self,i):
+    def add_snake(self, i):
         while True:
             try:
-                player = Snake(self,ID=i)
+                player = Snake(self, ID=i)
                 x = randint(2, self.height) - 1
                 y = randint(1, self.weight) - 1
                 if self.matrix[x][y] == '' and self.matrix[x - 1][y] == '' and self.matrix[x + 1][y] == '':
@@ -49,19 +49,17 @@ class board:
 
 
 class head:
-    def __init__(self,direction='x+', x=0, y=0):
+    def __init__(self, direction='x+', x=0, y=0):
         self.direction = direction
         self.x = x
         self.y = y
+
     def __str__(self):
         return 'H'
 
 
 class part_of_body:
-    def __init__(self, direction='x+', corner='', x=0, y=0,):
-        self.direction = direction
-        self.corner = corner
-
+    def __init__(self, x=0, y=0, ):
         self.x = x
         self.y = y
 
@@ -76,7 +74,6 @@ class Snake:
         self.x = x
         self.y = y
         self.ID = ID
-        self.killed = False
 
     def __str__(self):
         return 'S'
@@ -84,9 +81,9 @@ class Snake:
     def snake_step(self):
         try:
             if self.body[0].direction == 'x+' and self.board.matrix[self.x - 1][self.y] not in [head,
-                                                                                               part_of_body] and 0 <= self.x - 1 <= self.board.height:
+                                                                                                part_of_body] and 0 <= self.x - 1 <= self.board.height:
                 if self.board.matrix[self.x - 1][self.y] == 'A':
-                    self.body.insert(1,part_of_body(x=self.x,y=self.y))
+                    self.body.insert(1, part_of_body(x=self.x, y=self.y))
                     self.board.matrix[self.x - 1][self.y] = self.body[0]
                     self.board.matrix[self.x][self.y] = self.body[1]
                 else:
@@ -103,7 +100,6 @@ class Snake:
             self.kill()
 
     def kill(self):
-        self.killed = True
         for i in self.body:
             self.board.matrix[i.x][i.y] = ''
         for i in range(len(self.board.snakes)):
