@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, QRect
 from PyQt5.QtGui import QCloseEvent, QKeyEvent, QPainter, QColor
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from mainUi import Ui_MainWindow as mainui
@@ -37,40 +37,46 @@ class Game(QMainWindow, gameui):
     def __init__(self, parent=None):
         self.parent = parent
         super().__init__()
-        self.boardResolution = (10,10)
+        self.boardResolution = (40,30)
         self.setupUi(self)
         self.tps = QTimer()
-        self.tps.setInterval(1000)
+        self.tps.setInterval(300)
         self.tps.start()
         self.gameboard = board(*self.boardResolution)
-        #self.tps.timeout.connect(self.step)
-        for i in range(80):
-            self.gameboard.add_apple()
+        self.tps.timeout.connect(self.step)
+        controls_lables = [self.playr1control, self.playr2control, self.playr3control, self.playr4control]
         for i in range(parent.player_count):
             self.gameboard.add_snake(i)
+            controls_lables[i].setTextColor(QColor(*self.gameboard.snakes[i].color))
+
+
     def paintEvent(self, event):
         qp = QPainter()
         qp.begin(self)
-        self.draw_flag(qp)
+        self.draw_matrix(qp)
         qp.end()
 
-    def draw_flag(self, qp):
-        qp.setBrush(QColor(255, 0, 0))
-        qp.drawRect(30, 30, 120, 30)
+    def draw_matrix(self, qp):
         qp.setBrush(QColor(0, 255, 0))
-        qp.drawRect(30, 60, 120, 30)
-        qp.setBrush(QColor(0, 0, 255))
-        qp.drawRect(30, 90, 120, 30)
+        qp.drawRect(QRect(100,100,800,600))
+        for x in range(self.gameboard.weight):
+            for y in range(self.gameboard.height):
+                if str(self.gameboard.matrix[x][y]) == '':
+                    continue
+                if str(self.gameboard.matrix[x][y]) == 'A':
+                    qp.setBrush(QColor(255,0,0))
+                else:
+                    qp.setBrush(QColor(*self.gameboard.matrix[x][y].color))
+                qp.drawRect(100 + y * 20, 100 + x * 20, 20,20)
     def step(self):
-        print('\n')
-        print(self.gameboard.snakes)
         self.gameboard.board_step()
-        repr(self.gameboard)
+        self.update()
     def closeEvent(self, QCloseEvent):
         self.tps.stop()
         self.parent.show()
 
     def keyPressEvent(self, QKeyEvent):
+        print(QKeyEvent.key)
         players_directions = {1:{87:'x-',83:'x+',68:'y+',65:'y-'},
                               2:{16777235: 'x-', 16777237: 'x+', 16777236: 'y+', 16777234: 'y-'},
                               3:{70: 'x-', 86: 'x+', 66: 'y+', 67: 'y-'},
@@ -82,7 +88,7 @@ class Game(QMainWindow, gameui):
                     i.body[0].direction = players_directions[index+1][int(QKeyEvent.key())]
             except KeyError:
                 continue
-        self.step()
+
 
 
 if __name__ == '__main__':
