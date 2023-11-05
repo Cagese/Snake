@@ -43,7 +43,7 @@ class Game(QMainWindow, gameui):
         self.tps.setInterval(1000)
         self.tps.start()
         self.gameboard = board(*self.boardResolution)
-        self.tps.timeout.connect(self.step)
+        #self.tps.timeout.connect(self.step)
         for i in range(80):
             self.gameboard.add_apple()
         for i in range(parent.player_count):
@@ -71,16 +71,18 @@ class Game(QMainWindow, gameui):
         self.parent.show()
 
     def keyPressEvent(self, QKeyEvent):
-        players_directions = {1:{87:'x+',83:'x-',68:'y+',65:'y-'},
-                              2:{16777235: 'x+', 16777237: 'x-', 16777236: 'y+', 16777234: 'y-'},
-                              3:{70: 'x+', 86: 'x-', 66: 'y+', 67: 'y-'},
-                              4:{79: 'x+', 76: 'x-', 59: 'y+', 75: 'y-'}}
-        try:
-            for index,i in enumerate(self.gameboard.snakes):
-                i.body[0].direction = players_directions[index]
-        except KeyError:
-            pass
-
+        players_directions = {1:{87:'x-',83:'x+',68:'y+',65:'y-'},
+                              2:{16777235: 'x-', 16777237: 'x+', 16777236: 'y+', 16777234: 'y-'},
+                              3:{70: 'x-', 86: 'x+', 66: 'y+', 67: 'y-'},
+                              4:{79: 'x-', 76: 'x+', 59: 'y+', 75: 'y-'}}
+        for index,i in enumerate(self.gameboard.snakes):
+            try:
+                new_direction=players_directions[index+1][int(QKeyEvent.key())]
+                if not(i.body[0].direction[:1] == new_direction[:1] and i.body[0].direction[1:] != new_direction[1:]):
+                    i.body[0].direction = players_directions[index+1][int(QKeyEvent.key())]
+            except KeyError:
+                continue
+        self.step()
 
 
 if __name__ == '__main__':

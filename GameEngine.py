@@ -1,4 +1,4 @@
-from random import randint
+from random import randint,sample
 
 
 class board:
@@ -44,12 +44,12 @@ class board:
     def board_step(self):
         if not (any(self.matrix[x][y] == 'A' for x in range(self.height) for y in range(self.weight))):
             self.add_apple()
-        for snake in self.snakes:
+        for snake in sample(self.snakes,len(self.snakes)):
             snake.snake_step()
 
 
 class head:
-    def __init__(self, direction='x+', x=0, y=0):
+    def __init__(self, direction='x-', x=0, y=0):
         self.direction = direction
         self.x = x
         self.y = y
@@ -79,21 +79,23 @@ class Snake:
         return 'S'
 
     def snake_step(self):
+        saturated = False
+        coefficient = {'x-':(-1,0),'x+':(1,0),'y+':(0,1),'y-':(0,-1)}
+        x0,y0 = coefficient[self.body[0].direction]
         try:
-            if self.body[0].direction == 'x+' and self.board.matrix[self.x - 1][self.y] not in [head,
-                                                                                                part_of_body] and 0 <= self.x - 1 <= self.board.height:
-                if self.board.matrix[self.x - 1][self.y] == 'A':
-                    self.body.insert(1, part_of_body(x=self.x, y=self.y))
-                    self.board.matrix[self.x - 1][self.y] = self.body[0]
-                    self.board.matrix[self.x][self.y] = self.body[1]
-                else:
-                    self.body.insert(1, part_of_body(x=self.x, y=self.y))
-                    self.board.matrix[self.x - 1][self.y] = self.body[0]
-                    self.board.matrix[self.x][self.y] = self.body[1]
+            if str(self.board.matrix[self.x + x0][self.y + y0]) not in ['H', 'P'] and 0 <= self.x + x0 <= self.board.height and 0 <= self.y + y0 <= self.board.weight:
+                if self.board.matrix[self.x + x0][self.y+ y0] == 'A':
+                    saturated = True
+                self.body.insert(1, part_of_body(x=self.x, y=self.y))
+                self.board.matrix[self.x + x0][self.y+ y0] = self.body[0]
+                self.board.matrix[self.x][self.y] = self.body[1]
+                if not saturated:
                     self.board.matrix[self.body[-1].x][self.body[-1].y] = ''
                     del self.body[-1]
-                self.x -= 1
-                self.body[0].x -= 1
+                self.y += y0
+                self.x += x0
+                self.body[0].y += y0
+                self.body[0].x += x0
             else:
                 raise IndexError
         except IndexError:
