@@ -1,26 +1,28 @@
 import sys
 from PyQt5.QtCore import QTimer, QRect
 from PyQt5.QtGui import QCloseEvent, QKeyEvent, QPainter, QColor
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QInputDialog, QTableWidgetItem
+from sqlite3 import connect as sqconnect
 from mainUi import Ui_MainWindow as mainui
 from gameUi import Ui_MainWindow as gameui
+from staticUi import Ui_Dialog as staticui
 
 from GameEngine import *
 
 
-# self.timer.timeout.connect(self.run)
-# self.timer.start()
 class MainMenu(QMainWindow, mainui):
 
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.setObjectName("Главное меню")
 
         self.setCentralWidget(self.centralwidget)
 
         self.player_count = 1
         self.player_counter_slider.valueChanged.connect(self.count_player)
         self.Startbutton.clicked.connect(self.run)
+        self.statisticbutton.clicked.connect(self.run_statics)
 
     def count_player(self):
         self.player_count = self.player_counter_slider.value()
@@ -30,19 +32,52 @@ class MainMenu(QMainWindow, mainui):
         self.hide()
         self.game = Game(self)
         self.game.show()
+    def run_statics(self):
+        self.hide()
+        self.static = Statistic(self)
+        self.static.show()
+
+class Statistic(QMainWindow,staticui):
+    def __init__(self,parent):
+        super().__init__()
+        self.parent = parent
+        self.setupUi(self)
+        self.sort.addItems(["1_playergame_point","2_playergame_point","3_playergame_point","4_playergame_point","all game point"])
+        self.connection = sqconnect("static.sqlite")
+        self.sort.currentIndexChanged.connect(self.data_change)
+        self.data_change()
+
+    def data_change(self):
+        sort = self.sort.itemText(self.sort.currentIndex())
+        print(sort)
+        query = f"""SELECT * from static
+                    ORDER BY "{sort}";"""
+        res = self.connection.cursor().execute(query).fetchall()
+
+        self.tableWidget.setColumnCount(6)
+        self.tableWidget.setRowCount(0)
+        for i, row in enumerate(res):
+            self.tableWidget.setRowCount(
+                self.tableWidget.rowCount() + 1)
+            for j, elem in enumerate(row):
+                self.tableWidget.setItem(
+                    i, j, QTableWidgetItem(str(elem)))
+
+    def closeEvent(self, QCloseEvent):
+        self.parent.show()
+
+
 
 
 class Game(QMainWindow, gameui):
     def __init__(self, parent=None):
         self.parent = parent
         super().__init__()
+        self.setObjectName("Snake")
         self.boardResolution = (40, 30)
         self.setupUi(self)
-        self.tps = QTimer()
-        self.tps.setInterval(300)
-        self.tps.start()
         self.gameboard = board(*self.boardResolution)
-        self.tps.timeout.connect(self.step)
+
         controls_lables = [self.player1control, self.player2control, self.player3control, self.player4control]
         self.playercontrolhider(controls_lables)
         for i in range(parent.player_count):
@@ -52,6 +87,17 @@ class Game(QMainWindow, gameui):
             promt = "QTextBrowser { background-color: rgb(" + ', '.join(
                 map(str, self.gameboard.snakes[i].body[0].color)) + ") }"
             controls_lables[i].setStyleSheet(promt)
+        for index,snake in enumerate(self.gameboard.snakes):
+            name,ok_pressed = QInputDialog.getText(self, "Введите имя",
+                                 f"Игрок №{index+1} введите своё имя")
+            if ok_pressed:
+                snake.name = name
+            else:
+                snake.name = None
+        self.tps = QTimer()
+        self.tps.setInterval(300)
+        self.tps.start()
+        self.tps.timeout.connect(self.step)
 
     def playercontrolhider(self, players):
         for i in players:
@@ -89,7 +135,10 @@ class Game(QMainWindow, gameui):
             if sum([int(i.killed is False) for i in self.gameboard.snakes]) == 1:
                 win_player = list(filter(lambda x: x.killed is False,self.gameboard.snakes))[0]
                 win = QMessageBox(self)
-                win.setText(f"Игрок {self.gameboard.snakes.index(win_player)} выигрывает с очками: {win_player.points}")
+                if win_player.name is not None:
+                    win.setText(f"Игрок {win_player.name} выигрывает с очками: {win_player.points}")
+                else:
+                    win.setText(f"Игрок {self.gameboard.snakes.index(win_player)+1} выигрывает с очками: {win_player.points}")
                 win.show()
                 self.close()
 
