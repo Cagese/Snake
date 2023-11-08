@@ -1,11 +1,13 @@
 import sys
+
+from PyQt5 import QtCore
 from PyQt5.QtCore import QTimer, QRect
 from PyQt5.QtGui import QCloseEvent, QKeyEvent, QPainter, QColor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QInputDialog, QTableWidgetItem
 from sqlite3 import connect as sqconnect
-from mainUi import Ui_MainWindow as mainui
-from gameUi import Ui_MainWindow as gameui
-from staticUi import Ui_Dialog as staticui
+from mainUi import Ui_MainMenu as mainui
+from gameUi import Ui_Game as gameui
+from staticUi import Ui_Statics as staticui
 
 from GameEngine import *
 
@@ -15,7 +17,7 @@ class MainMenu(QMainWindow, mainui):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.setObjectName("Главное меню")
+        self.setWindowTitle("Главное меню")
 
         self.setCentralWidget(self.centralwidget)
 
@@ -40,19 +42,19 @@ class MainMenu(QMainWindow, mainui):
 class Statistic(QMainWindow,staticui):
     def __init__(self,parent):
         super().__init__()
+        self.setWindowTitle("Статистика")
         self.parent = parent
         self.setupUi(self)
-        self.sort.addItems(["1_playergame_point","2_playergame_point","3_playergame_point","4_playergame_point","all game point"])
+        self.sort.addItems(["1_playergame_point","2_playergame_point","3_playergame_point","4_playergame_point","all_game_point"])
         self.connection = sqconnect("static.sqlite")
         self.sort.currentIndexChanged.connect(self.data_change)
         self.data_change()
 
     def data_change(self):
-        sort = self.sort.itemText(self.sort.currentIndex())
-        print(sort)
-        query = f"""SELECT * from static
-                    ORDER BY "{sort}";"""
-        res = self.connection.cursor().execute(query).fetchall()
+        sort = self.sort.currentIndex()
+        query = f"""SELECT * from static"""
+        res = sorted(self.connection.cursor().execute(query).fetchall(),key=lambda x: x[sort + 1],reverse=True)
+
 
         self.tableWidget.setColumnCount(6)
         self.tableWidget.setRowCount(0)
@@ -73,7 +75,6 @@ class Game(QMainWindow, gameui):
     def __init__(self, parent=None):
         self.parent = parent
         super().__init__()
-        self.setObjectName("Snake")
         self.boardResolution = (40, 30)
         self.setupUi(self)
         self.gameboard = board(*self.boardResolution)
@@ -93,11 +94,13 @@ class Game(QMainWindow, gameui):
             if ok_pressed:
                 snake.name = name
             else:
-                snake.name = None
+                snake.name = ''
         self.tps = QTimer()
         self.tps.setInterval(300)
         self.tps.start()
         self.tps.timeout.connect(self.step)
+
+        self.connection = sqconnect("static.sqlite")
 
     def playercontrolhider(self, players):
         for i in players:
@@ -128,14 +131,25 @@ class Game(QMainWindow, gameui):
         self.game_over_check()
 
     def game_over_check(self):
+        win = QMessageBox(self)
         if self.parent.player_count == 1:
             if self.gameboard.snakes[0].killed:
+                win_player = self.gameboard.snakes[0]
+                self.dbupdate(self.gameboard.snakes[0])
+                if win_player.name.strip() != '':
+                    win.setText(f"Игрок {win_player.name} выигрывает с очками: {win_player.points}")
+                else:
+                    win.setText(
+                        f"Игрок {self.gameboard.snakes.index(win_player) + 1} выигрывает с очками: {win_player.points}")
+                win.show()
                 self.close()
+
+
         else:
             if sum([int(i.killed is False) for i in self.gameboard.snakes]) == 1:
                 win_player = list(filter(lambda x: x.killed is False,self.gameboard.snakes))[0]
-                win = QMessageBox(self)
-                if win_player.name is not None:
+                self.dbupdate(win_player)
+                if win_player.name.strip() != '':
                     win.setText(f"Игрок {win_player.name} выигрывает с очками: {win_player.points}")
                 else:
                     win.setText(f"Игрок {self.gameboard.snakes.index(win_player)+1} выигрывает с очками: {win_player.points}")
@@ -143,12 +157,30 @@ class Game(QMainWindow, gameui):
                 self.close()
 
 
+    def dbupdate(self,win_player):
+        if len(self.connection.cursor().execute(f"""SELECT * FROM static
+    WHERE name = '{win_player.name.lower()}'""").fetchall()) == 1:
+            old_data = self.connection.cursor().execute(f"""SELECT * FROM static
+                WHERE name = '{win_player.name.lower()}'""")
+            need_update = ["1_playergame_point", "2_playergame_point", "3_playergame_point", "4_playergame_point"][len(self.gameboard.snakes) - 1]
+
+            self.connection.cursor().execute(f"""UPDATE static set '{need_update}' = {max(int(win_player.points),int(list(old_data)[len(self.gameboard.snakes) - 1][1:-1][len(self.gameboard.snakes) - 1]))} WHERE name = '{win_player.name.lower()}'""")
+            all_game_points = sum(list(old_data)[1:-1])
+            self.connection.cursor().execute(
+                f"""UPDATE static set all_game_point = {all_game_points} WHERE name = '{win_player.name.lower()}'""")
+            self.connection.commit()
+        else:
+            out_points = [0,0,0,0,0]
+            out_points[len(self.gameboard.snakes) - 1] = win_player.points
+            out_points[-1] = win_player.points
+            o,t,fr,fo,all = out_points
+            self.connection.cursor().execute(f"""INSERT INTO static VALUES('{win_player.name.lower()}',{o},{t},{fr},{fo},{all})""")
+            self.connection.commit()
     def closeEvent(self, QCloseEvent):
         self.tps.stop()
         self.parent.show()
 
     def keyPressEvent(self, QKeyEvent):
-        print(QKeyEvent.key())
         players_directions = {1: {87: 'x-', 83: 'x+', 68: 'y+', 65: 'y-'},
                               2: {56: 'x-', 53: 'x+', 54: 'y+', 52: 'y-'},
                               3: {70: 'x-', 86: 'x+', 66: 'y+', 67: 'y-'},

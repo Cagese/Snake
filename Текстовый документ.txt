@@ -1,1 +1,0 @@
-pyuic5.exe gameUi.ui -o gameUi.py

@@ -11,24 +11,24 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_Dialog(object):
-    def setupUi(self, Dialog):
-        Dialog.setObjectName("Dialog")
-        Dialog.resize(1000, 900)
-        self.tableWidget = QtWidgets.QTableWidget(Dialog)
+class Ui_Statics(object):
+    def setupUi(self, Statics):
+        Statics.setObjectName("Statics")
+        Statics.resize(1000, 900)
+        self.tableWidget = QtWidgets.QTableWidget(Statics)
         self.tableWidget.setGeometry(QtCore.QRect(25, 100, 950, 750))
         self.tableWidget.setMinimumSize(QtCore.QSize(950, 750))
         self.tableWidget.setMaximumSize(QtCore.QSize(950, 750))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
-        self.sort = QtWidgets.QComboBox(Dialog)
+        self.sort = QtWidgets.QComboBox(Statics)
         self.sort.setGeometry(QtCore.QRect(40, 40, 391, 22))
         self.sort.setObjectName("sort")
 
-        self.retranslateUi(Dialog)
-        QtCore.QMetaObject.connectSlotsByName(Dialog)
+        self.retranslateUi(Statics)
+        QtCore.QMetaObject.connectSlotsByName(Statics)
 
-    def retranslateUi(self, Dialog):
+    def retranslateUi(self, Statics):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        Statics.setWindowTitle(_translate("Statics", "Dialog"))

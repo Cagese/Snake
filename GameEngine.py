@@ -24,7 +24,7 @@ class board:
         while True:
             try:
                 player = Snake(self, color=(randint(100, 200), randint(100, 200), randint(100, 200)))
-                x = randint(2, self.weight) - 1
+                x = randint(5, self.weight) - 1
                 y = randint(1, self.height) - 1
                 if self.matrix[x][y] == '' and self.matrix[x - 1][y] == '' and self.matrix[x + 1][y] == '':
                     self.matrix[x][y] = player.body[0]

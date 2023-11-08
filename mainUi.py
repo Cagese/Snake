@@ -11,13 +11,13 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(950, 684)
-        MainWindow.setMinimumSize(QtCore.QSize(950, 684))
-        MainWindow.setMaximumSize(QtCore.QSize(950, 684))
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+class Ui_MainMenu(object):
+    def setupUi(self, MainMenu):
+        MainMenu.setObjectName("MainMenu")
+        MainMenu.resize(950, 684)
+        MainMenu.setMinimumSize(QtCore.QSize(950, 684))
+        MainMenu.setMaximumSize(QtCore.QSize(950, 684))
+        self.centralwidget = QtWidgets.QWidget(MainMenu)
         self.centralwidget.setObjectName("centralwidget")
         self.layoutWidget = QtWidgets.QWidget(self.centralwidget)
         self.layoutWidget.setGeometry(QtCore.QRect(0, 0, 951, 651))
@@ -66,22 +66,22 @@ class Ui_MainWindow(object):
         self.player_counter_slider.setObjectName("player_counter_slider")
         self.verticalLayout.addWidget(self.player_counter_slider)
         self.verticalLayout_2.addLayout(self.verticalLayout)
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        MainMenu.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainMenu)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 950, 21))
         self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        MainMenu.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(MainMenu)
         self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
+        MainMenu.setStatusBar(self.statusbar)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.retranslateUi(MainMenu)
+        QtCore.QMetaObject.connectSlotsByName(MainMenu)
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, MainMenu):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.Name.setText(_translate("MainWindow", "Snake"))
-        self.Startbutton.setText(_translate("MainWindow", "Начать игру"))
-        self.statisticbutton.setText(_translate("MainWindow", "Статисктика"))
-        self.label.setText(_translate("MainWindow", "Количество игроков:1"))
+        MainMenu.setWindowTitle(_translate("MainMenu", "MainWindow"))
+        self.Name.setText(_translate("MainMenu", "Snake"))
+        self.Startbutton.setText(_translate("MainMenu", "Начать игру"))
+        self.statisticbutton.setText(_translate("MainMenu", "Статисктика"))
+        self.label.setText(_translate("MainMenu", "Количество игроков:1"))
