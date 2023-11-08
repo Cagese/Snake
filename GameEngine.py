@@ -76,7 +76,7 @@ class Snake:
         self.points = 0
         self.color = color
         self.killed = False
-        self.name=''
+        self.name = ''
 
     def __str__(self):
         return 'S'

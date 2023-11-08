@@ -34,18 +34,21 @@ class MainMenu(QMainWindow, mainui):
         self.hide()
         self.game = Game(self)
         self.game.show()
+
     def run_statics(self):
         self.hide()
         self.static = Statistic(self)
         self.static.show()
 
-class Statistic(QMainWindow,staticui):
-    def __init__(self,parent):
+
+class Statistic(QMainWindow, staticui):
+    def __init__(self, parent):
         super().__init__()
         self.setWindowTitle("Статистика")
         self.parent = parent
         self.setupUi(self)
-        self.sort.addItems(["1_playergame_point","2_playergame_point","3_playergame_point","4_playergame_point","all_game_point"])
+        self.sort.addItems(
+            ["1_playergame_point", "2_playergame_point", "3_playergame_point", "4_playergame_point", "all_game_point"])
         self.connection = sqconnect("static.sqlite")
         self.sort.currentIndexChanged.connect(self.data_change)
         self.data_change()
@@ -53,8 +56,7 @@ class Statistic(QMainWindow,staticui):
     def data_change(self):
         sort = self.sort.currentIndex()
         query = f"""SELECT * from static"""
-        res = sorted(self.connection.cursor().execute(query).fetchall(),key=lambda x: x[sort + 1],reverse=True)
-
+        res = sorted(self.connection.cursor().execute(query).fetchall(), key=lambda x: x[sort + 1], reverse=True)
 
         self.tableWidget.setColumnCount(6)
         self.tableWidget.setRowCount(0)
@@ -67,8 +69,6 @@ class Statistic(QMainWindow,staticui):
 
     def closeEvent(self, QCloseEvent):
         self.parent.show()
-
-
 
 
 class Game(QMainWindow, gameui):
@@ -88,9 +88,9 @@ class Game(QMainWindow, gameui):
             promt = "QTextBrowser { background-color: rgb(" + ', '.join(
                 map(str, self.gameboard.snakes[i].body[0].color)) + ") }"
             controls_lables[i].setStyleSheet(promt)
-        for index,snake in enumerate(self.gameboard.snakes):
-            name,ok_pressed = QInputDialog.getText(self, "Введите имя",
-                                 f"Игрок №{index+1} введите своё имя")
+        for index, snake in enumerate(self.gameboard.snakes):
+            name, ok_pressed = QInputDialog.getText(self, "Введите имя",
+                                                    f"Игрок №{index + 1} введите своё имя")
             if ok_pressed:
                 snake.name = name
             else:
@@ -147,35 +147,39 @@ class Game(QMainWindow, gameui):
 
         else:
             if sum([int(i.killed is False) for i in self.gameboard.snakes]) == 1:
-                win_player = list(filter(lambda x: x.killed is False,self.gameboard.snakes))[0]
+                win_player = list(filter(lambda x: x.killed is False, self.gameboard.snakes))[0]
                 self.dbupdate(win_player)
                 if win_player.name.strip() != '':
                     win.setText(f"Игрок {win_player.name} выигрывает с очками: {win_player.points}")
                 else:
-                    win.setText(f"Игрок {self.gameboard.snakes.index(win_player)+1} выигрывает с очками: {win_player.points}")
+                    win.setText(
+                        f"Игрок {self.gameboard.snakes.index(win_player) + 1} выигрывает с очками: {win_player.points}")
                 win.show()
                 self.close()
 
-
-    def dbupdate(self,win_player):
+    def dbupdate(self, win_player):
         if len(self.connection.cursor().execute(f"""SELECT * FROM static
     WHERE name = '{win_player.name.lower()}'""").fetchall()) == 1:
             old_data = self.connection.cursor().execute(f"""SELECT * FROM static
                 WHERE name = '{win_player.name.lower()}'""")
-            need_update = ["1_playergame_point", "2_playergame_point", "3_playergame_point", "4_playergame_point"][len(self.gameboard.snakes) - 1]
+            need_update = ["1_playergame_point", "2_playergame_point", "3_playergame_point", "4_playergame_point"][
+                len(self.gameboard.snakes) - 1]
 
-            self.connection.cursor().execute(f"""UPDATE static set '{need_update}' = {max(int(win_player.points),int(list(old_data)[len(self.gameboard.snakes) - 1][1:-1][len(self.gameboard.snakes) - 1]))} WHERE name = '{win_player.name.lower()}'""")
+            self.connection.cursor().execute(
+                f"""UPDATE static set '{need_update}' = {max(int(win_player.points), int(list(old_data)[len(self.gameboard.snakes) - 1][1:-1][len(self.gameboard.snakes) - 1]))} WHERE name = '{win_player.name.lower()}'""")
             all_game_points = sum(list(old_data)[1:-1])
             self.connection.cursor().execute(
                 f"""UPDATE static set all_game_point = {all_game_points} WHERE name = '{win_player.name.lower()}'""")
             self.connection.commit()
         else:
-            out_points = [0,0,0,0,0]
+            out_points = [0, 0, 0, 0, 0]
             out_points[len(self.gameboard.snakes) - 1] = win_player.points
             out_points[-1] = win_player.points
-            o,t,fr,fo,all = out_points
-            self.connection.cursor().execute(f"""INSERT INTO static VALUES('{win_player.name.lower()}',{o},{t},{fr},{fo},{all})""")
+            o, t, fr, fo, all = out_points
+            self.connection.cursor().execute(
+                f"""INSERT INTO static VALUES('{win_player.name.lower()}',{o},{t},{fr},{fo},{all})""")
             self.connection.commit()
+
     def closeEvent(self, QCloseEvent):
         self.tps.stop()
         self.parent.show()
