@@ -47,7 +47,7 @@ class Statistic(QMainWindow, staticui):
         self.parent = parent
         self.setupUi(self)
         self.sort.addItems(
-            ["1_playergame_point", "2_playergame_point", "3_playergame_point", "4_playergame_point", "all_game_point"])
+            ["1 playergame point", "2 playergame point", "3 playergame point", "4 playergame point", "all game point"])
         self.connection = sqconnect("static.sqlite")
         self.sort.currentIndexChanged.connect(self.data_change)
         self.data_change()
@@ -65,6 +65,10 @@ class Statistic(QMainWindow, staticui):
             for j, elem in enumerate(row):
                 self.tableWidget.setItem(
                     i, j, QTableWidgetItem(str(elem)))
+        self.tableWidget.setHorizontalHeaderLabels(["name","1 playergame point", "2 playergame point", "3 playergame point", "4 playergame point", "all game point"])
+        for i in range(6):
+            self.tableWidget.setColumnWidth(i,158)
+        self.tableWidget.resizeRowToContents(0)
 
     def closeEvent(self, QCloseEvent):
         self.parent.show()
