@@ -1,14 +1,14 @@
 import sys
+from sqlite3 import connect as sqconnect
 
 from PyQt5.QtCore import QTimer, QRect
-from PyQt5.QtGui import QCloseEvent, QKeyEvent, QPainter, QColor
+from PyQt5.QtGui import QPainter, QColor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QInputDialog, QTableWidgetItem
-from sqlite3 import connect as sqconnect
-from mainUi import Ui_MainMenu as mainui
-from gameUi import Ui_Game as gameui
-from staticUi import Ui_Statics as staticui
 
 from GameEngine import *
+from gameUi import Ui_Game as gameui
+from mainUi import Ui_MainMenu as mainui
+from staticUi import Ui_Statics as staticui
 
 
 class MainMenu(QMainWindow, mainui):
