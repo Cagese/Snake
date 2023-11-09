@@ -1,6 +1,5 @@
 import sys
 
-from PyQt5 import QtCore
 from PyQt5.QtCore import QTimer, QRect
 from PyQt5.QtGui import QCloseEvent, QKeyEvent, QPainter, QColor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QInputDialog, QTableWidgetItem
@@ -75,6 +74,7 @@ class Game(QMainWindow, gameui):
     def __init__(self, parent=None):
         self.parent = parent
         super().__init__()
+        self.setWindowTitle('Snake')
         self.boardResolution = (40, 30)
         self.setupUi(self)
         self.gameboard = board(*self.boardResolution)
@@ -133,6 +133,7 @@ class Game(QMainWindow, gameui):
     def game_over_check(self):
         win = QMessageBox(self)
         if self.parent.player_count == 1:
+            print('help')
             if self.gameboard.snakes[0].killed:
                 win_player = self.gameboard.snakes[0]
                 self.dbupdate(self.gameboard.snakes[0])
@@ -161,13 +162,12 @@ class Game(QMainWindow, gameui):
         if len(self.connection.cursor().execute(f"""SELECT * FROM static
     WHERE name = '{win_player.name.lower()}'""").fetchall()) == 1:
             old_data = self.connection.cursor().execute(f"""SELECT * FROM static
-                WHERE name = '{win_player.name.lower()}'""")
+                WHERE name = '{win_player.name.lower()}'""").fetchone()
             need_update = ["1_playergame_point", "2_playergame_point", "3_playergame_point", "4_playergame_point"][
                 len(self.gameboard.snakes) - 1]
-
             self.connection.cursor().execute(
-                f"""UPDATE static set '{need_update}' = {max(int(win_player.points), int(list(old_data)[len(self.gameboard.snakes) - 1][1:-1][len(self.gameboard.snakes) - 1]))} WHERE name = '{win_player.name.lower()}'""")
-            all_game_points = sum(list(old_data)[1:-1])
+                f"""UPDATE static set '{need_update}' = {max(int(win_player.points), int(old_data[len(self.gameboard.snakes)]))} WHERE name = '{win_player.name.lower()}'""")
+            all_game_points = sum(old_data[1:-1])
             self.connection.cursor().execute(
                 f"""UPDATE static set all_game_point = {all_game_points} WHERE name = '{win_player.name.lower()}'""")
             self.connection.commit()

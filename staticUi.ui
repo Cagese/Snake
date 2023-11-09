@@ -14,6 +14,9 @@
    <string>Dialog</string>
   </property>
   <widget class="QTableWidget" name="tableWidget">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>25</x>
@@ -33,6 +36,9 @@
      <width>950</width>
      <height>750</height>
     </size>
+   </property>
+   <property name="editTriggers">
+    <set>QAbstractItemView::NoEditTriggers</set>
    </property>
   </widget>
   <widget class="QComboBox" name="sort">
