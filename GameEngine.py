@@ -86,6 +86,7 @@ class Snake:
             saturated = False
             coefficient = {'x-': (-1, 0), 'x+': (1, 0), 'y+': (0, 1), 'y-': (0, -1)}
             x0, y0 = coefficient[self.body[0].direction]
+
             try:
                 if str(self.board.matrix[self.x + x0][self.y + y0]) not in ['H',
                                                                             'P'] and 0 <= self.x + x0 <= self.board.weight and 0 <= self.y + y0 <= self.board.height:

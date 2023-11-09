@@ -133,7 +133,6 @@ class Game(QMainWindow, gameui):
     def game_over_check(self):
         win = QMessageBox(self)
         if self.parent.player_count == 1:
-            print('help')
             if self.gameboard.snakes[0].killed:
                 win_player = self.gameboard.snakes[0]
                 self.dbupdate(self.gameboard.snakes[0])

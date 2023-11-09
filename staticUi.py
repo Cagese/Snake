@@ -33,4 +33,4 @@ class Ui_Statics(object):
 
     def retranslateUi(self, Statics):
         _translate = QtCore.QCoreApplication.translate
-        Statics.setWindowTitle(_translate("Statics", "Dialog"))
+        Statics.setWindowTitle(_translate("Statics", "Статистика"))
