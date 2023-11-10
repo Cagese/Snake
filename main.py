@@ -149,8 +149,6 @@ class Game(QMainWindow, gameui):
                         f"Игрок {self.gameboard.snakes.index(win_player) + 1} выигрывает с очками: {win_player.points}")
                 win.show()
                 self.close()
-
-
         else:
             if sum([int(i.killed is False) for i in self.gameboard.snakes]) == 1:
                 win_player = list(filter(lambda x: x.killed is False, self.gameboard.snakes))[0]
