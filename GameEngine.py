@@ -89,7 +89,8 @@ class Snake:
 
             try:
                 if str(self.board.matrix[self.x + x0][self.y + y0]) not in ['H',
-                                                                            'P'] and 0 <= self.x + x0 <= self.board.weight and 0 <= self.y + y0 <= self.board.height:
+                                                                            'P']\
+                        and 0 <= self.x + x0 <= self.board.weight and 0 <= self.y + y0 <= self.board.height:
                     if self.board.matrix[self.x + x0][self.y + y0] == 'A':
                         self.points += 20
                         self.board.add_apple()
