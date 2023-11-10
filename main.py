@@ -65,9 +65,11 @@ class Statistic(QMainWindow, staticui):
             for j, elem in enumerate(row):
                 self.tableWidget.setItem(
                     i, j, QTableWidgetItem(str(elem)))
-        self.tableWidget.setHorizontalHeaderLabels(["name","1 playergame point", "2 playergame point", "3 playergame point", "4 playergame point", "all game point"])
+        self.tableWidget.setHorizontalHeaderLabels(
+            ["name", "1 playergame point", "2 playergame point", "3 playergame point", "4 playergame point",
+             "all game point"])
         for i in range(6):
-            self.tableWidget.setColumnWidth(i,158)
+            self.tableWidget.setColumnWidth(i, 158)
         self.tableWidget.resizeRowToContents(0)
 
     def closeEvent(self, QCloseEvent):
