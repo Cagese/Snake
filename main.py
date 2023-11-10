@@ -179,6 +179,7 @@ class Game(QMainWindow, gameui):
             out_points[len(self.gameboard.snakes) - 1] = win_player.points
             out_points[-1] = win_player.points
             o, t, fr, fo, all = out_points
+            all = o + t + fr + fo
             self.connection.cursor().execute(
                 f"""INSERT INTO static VALUES('{win_player.name.lower()}',{o},{t},{fr},{fo},{all})""")
             self.connection.commit()
@@ -188,10 +189,12 @@ class Game(QMainWindow, gameui):
         self.parent.show()
 
     def keyPressEvent(self, QKeyEvent):
-        players_directions = {1: {87: 'x-', 83: 'x+', 68: 'y+', 65: 'y-'},
-                              2: {56: 'x-', 53: 'x+', 54: 'y+', 52: 'y-'},
-                              3: {70: 'x-', 86: 'x+', 66: 'y+', 67: 'y-'},
-                              4: {79: 'x-', 76: 'x+', 59: 'y+', 75: 'y-'}}
+        print(QKeyEvent.key())
+        players_directions = {
+            1: {87: 'x-', 1062: 'x-', 83: 'x+', 1067: 'x+', 68: 'y+', 1042: 'y+', 65: 'y-', 1060: 'y-'},
+            2: {56: 'x-', 53: 'x+', 54: 'y+', 52: 'y-'},
+            3: {70: 'x-', 1040: 'x-', 86: 'x+', 1052: 'x+', 66: 'y+', 1048: 'y+', 67: 'y-', 1057: 'y-'},
+            4: {79: 'x-', 1065: 'x-', 76: 'x+', 1044: 'x+', 59: 'y+', 1046: 'y+', 75: 'y-', 1051: 'y-'}}
         for index, i in enumerate(self.gameboard.snakes):
             try:
                 new_direction = players_directions[index + 1][int(QKeyEvent.key())]
